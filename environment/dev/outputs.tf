@@ -6,3 +6,8 @@ output "alb_dns_name" {
 output "vpc_id" {
   value = module.networking.vpc_id
 }
+
+output "cloudfront_url" {
+  value       = "https://${module.cdn.cloudfront_domain_name}"
+  description = "The URL of the CDN providing content delivery optimized for Kenya"
+}

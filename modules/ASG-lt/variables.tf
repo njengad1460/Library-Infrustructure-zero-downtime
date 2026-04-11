@@ -6,7 +6,6 @@ variable "project_name" {
 variable "instance_type" {
   description = "EC2 instance type"
   type        = string
-  default     = "t2.micro"
 }
 
 variable "subnet_ids" {
@@ -37,4 +36,31 @@ variable "max_size" {
 variable "desired_capacity" {
   description = "Desired number of instances in the ASG"
   type        = number
+}
+
+variable "enable_autoscaling" {
+  description = "Whether to enable autoscaling policies"
+  type        = bool
+  default     = false
+}
+
+variable "iam_instance_profile_name" {
+  description = "Name of the IAM instance profile for EC2"
+  type        = string
+}
+
+variable "ecr_image_uri" {
+  description = "URI of the Docker image in ECR"
+  type        = string
+}
+
+variable "region" {
+  description = "AWS region"
+  type        = string
+}
+
+variable "key_name" {
+  description = "Name of the SSH key pair to use for EC2 instances"
+  type        = string
+  default     = null
 }
