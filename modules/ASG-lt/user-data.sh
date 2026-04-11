@@ -1,23 +1,46 @@
 #!/bin/bash
-# Update and install Docker
-sudo apt-get update -y
-sudo apt-get install -y docker.io unzip
-sudo systemctl start docker
-sudo systemctl enable docker
-sudo usermod -aG docker ubuntu
+set -e
 
-# Install AWS CLI (needed for ECR login)
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-unzip awscliv2.zip
-sudo ./aws/install
+# Update system
+apt-get update -y
+apt-get install -y docker.io awscli docker-compose-plugin
 
-# Extract registry from image URI
-REGISTRY=$(echo "${ecr_image_uri}" | cut -d'/' -f1)
+systemctl start docker
+systemctl enable docker
 
-# Login to ECR
-# The IAM instance profile provides the necessary permissions
-aws ecr get-login-password --region "${region}" | docker login --username AWS --password-stdin "$REGISTRY"
+# Add ubuntu user to docker group
+usermod -aG docker ubuntu || true
 
-# Pull and run the container
-docker pull "${ecr_image_uri}"
-docker run -d -p 80:80 --name library-app "${ecr_image_uri}"
+# Variables from Terraform
+REGISTRY=$(echo "${backend_image_uri}" | cut -d'/' -f1)
+
+# Authenticate Docker to ECR
+aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin $REGISTRY
+
+# Create docker-compose.yml
+cat <<EOF > /home/ubuntu/docker-compose.yml
+version: '3.8'
+services:
+  backend:
+    image: ${backend_image_uri}
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    # environment:
+    #   - MONGO_URI=mongodb://your-db-string
+
+  frontend:
+    image: ${frontend_image_uri}
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+EOF
+
+# Change ownership to ubuntu user
+chown ubuntu:ubuntu /home/ubuntu/docker-compose.yml
+
+# Run containers
+cd /home/ubuntu
+docker compose up -d

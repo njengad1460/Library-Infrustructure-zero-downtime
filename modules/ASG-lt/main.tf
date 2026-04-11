@@ -23,8 +23,9 @@ resource "aws_launch_template" "lt" {
   }
 
   user_data = base64encode(templatefile("${path.module}/user-data.sh", {
-    ecr_image_uri = var.ecr_image_uri
-    region        = var.region
+    backend_image_uri  = var.backend_image_uri
+    frontend_image_uri = var.frontend_image_uri
+    region             = var.region
   }))
 
   lifecycle {

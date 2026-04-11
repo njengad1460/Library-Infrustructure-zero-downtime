@@ -46,7 +46,8 @@ module "asg" {
   desired_capacity          = var.desired_capacity
   enable_autoscaling        = var.enable_autoscaling
   iam_instance_profile_name = module.security.ec2_instance_profile_name
-  ecr_image_uri             = var.ecr_image_uri
+  backend_image_uri         = var.backend_image_uri
+  frontend_image_uri        = var.frontend_image_uri
   region                    = var.region
   key_name                  = var.key_name
 }

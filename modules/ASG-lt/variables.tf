@@ -49,8 +49,13 @@ variable "iam_instance_profile_name" {
   type        = string
 }
 
-variable "ecr_image_uri" {
-  description = "URI of the Docker image in ECR"
+variable "backend_image_uri" {
+  description = "URI of the Backend Docker image in ECR"
+  type        = string
+}
+
+variable "frontend_image_uri" {
+  description = "URI of the Frontend Docker image in ECR"
   type        = string
 }
 
