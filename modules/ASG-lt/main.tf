@@ -11,8 +11,6 @@ resource "aws_launch_template" "lt" {
   name_prefix   = "${var.project_name}-lt-"
   image_id      = data.aws_ami.ubuntu_22_04.id
   instance_type = var.instance_type
-  key_name      = var.key_name
-
   network_interfaces {
     associate_public_ip_address = false
     security_groups             = [var.ec2_sg_id]
