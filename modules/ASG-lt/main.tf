@@ -14,7 +14,7 @@ resource "aws_launch_template" "lt" {
   key_name      = var.key_name
 
   network_interfaces {
-    associate_public_ip_address = true
+    associate_public_ip_address = false
     security_groups             = [var.ec2_sg_id]
   }
 
@@ -55,7 +55,7 @@ resource "aws_autoscaling_group" "asg" {
   instance_refresh {
     strategy = "Rolling"
     preferences {
-      min_healthy_percentage = 50
+      min_healthy_percentage = 70
       instance_warmup        = 300
     }
   }

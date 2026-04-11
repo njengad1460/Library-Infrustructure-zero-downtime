@@ -5,7 +5,8 @@ resource "aws_lb" "alb" {
   security_groups    = [var.alb_sg_id]
   subnets            = var.public_subnet_ids
 
-  enable_deletion_protection = false
+  enable_deletion_protection  = false
+  drop_invalid_header_fields  = true
 
   tags = {
     Name = "${var.project_name}-alb"
@@ -39,7 +40,11 @@ resource "aws_lb_listener" "http" {
   protocol          = "HTTP"
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.tg.arn
+    type = "redirect"
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
   }
 }
