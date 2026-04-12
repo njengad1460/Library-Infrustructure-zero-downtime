@@ -37,6 +37,14 @@ resource "aws_security_group" "ec2_sg" {
     security_groups = [aws_security_group.alb_sg.id]
   }
 
+  # Allow backend API from ALB
+  ingress {
+    from_port       = 5000
+    to_port         = 5000
+    protocol        = "tcp"
+    security_groups = [aws_security_group.alb_sg.id]
+  }
+
   # Allow SSH
   ingress {
     from_port   = 22
@@ -79,6 +87,21 @@ resource "aws_iam_role" "ec2_ecr_role" {
 resource "aws_iam_role_policy_attachment" "ecr_read_only" {
   role       = aws_iam_role.ec2_ecr_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
+# Allow EC2 to read secrets from Secrets Manager
+resource "aws_iam_role_policy" "secrets_access" {
+  name = "${var.project_name}-secrets-access"
+  role = aws_iam_role.ec2_ecr_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = ["secretsmanager:GetSecretValue"]
+      Resource = "arn:aws:secretsmanager:*:*:secret:library-system/dev-*"
+    }]
+  })
 }
 
 # IAM Instance Profile

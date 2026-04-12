@@ -40,7 +40,8 @@ module "asg" {
   instance_type      = local.instance_type
   subnet_ids         = module.networking.public_subnet_ids
   ec2_sg_id          = module.security.ec2_sg_id
-  target_group_arn   = module.load_balancer.target_group_arn
+  target_group_arn          = module.load_balancer.target_group_arn
+  backend_target_group_arn  = module.load_balancer.backend_target_group_arn
   min_size                  = var.min_size
   max_size                  = var.max_size
   desired_capacity          = var.desired_capacity
@@ -49,7 +50,7 @@ module "asg" {
   backend_image_uri         = var.backend_image_uri
   frontend_image_uri        = var.frontend_image_uri
   region                    = var.region
-  key_name                  = var.key_name
+  # key_name                  = var.key_name
 }
 
 module "cdn" {

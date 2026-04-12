@@ -23,6 +23,11 @@ variable "target_group_arn" {
   type        = string
 }
 
+variable "backend_target_group_arn" {
+  description = "ARN of the backend target group"
+  type        = string
+}
+
 variable "min_size" {
   description = "Minimum number of instances in the ASG"
   type        = number
@@ -64,8 +69,8 @@ variable "region" {
   type        = string
 }
 
-variable "key_name" {
-  description = "Name of the SSH key pair to use for EC2 instances"
-  type        = string
-  default     = null
-}
+# variable "key_name" {
+#   description = "Name of the SSH key pair to use for EC2 instances"
+#   type        = string
+#   default     = null
+# }

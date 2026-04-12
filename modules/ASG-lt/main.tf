@@ -11,8 +11,9 @@ resource "aws_launch_template" "lt" {
   name_prefix   = "${var.project_name}-lt-"
   image_id      = data.aws_ami.ubuntu_22_04.id
   instance_type = var.instance_type
+
   network_interfaces {
-    associate_public_ip_address = false
+    associate_public_ip_address = true
     security_groups             = [var.ec2_sg_id]
   }
 
@@ -34,12 +35,12 @@ resource "aws_launch_template" "lt" {
 resource "aws_autoscaling_group" "asg" {
   name                = "${var.project_name}-asg"
   vpc_zone_identifier = var.subnet_ids
-  target_group_arns   = [var.target_group_arn]
+  target_group_arns   = [var.target_group_arn, var.backend_target_group_arn]
 
   health_check_type         = "ELB"
-  health_check_grace_period = 300
+  health_check_grace_period = 420
 
-  wait_for_elb_capacity = var.desired_capacity
+  wait_for_elb_capacity = 1
 
   min_size         = var.min_size
   max_size         = var.max_size
@@ -54,7 +55,7 @@ resource "aws_autoscaling_group" "asg" {
     strategy = "Rolling"
     preferences {
       min_healthy_percentage = 70
-      instance_warmup        = 300
+      instance_warmup        = 120
     }
   }
 
