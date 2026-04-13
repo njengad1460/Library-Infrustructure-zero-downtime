@@ -26,7 +26,7 @@ unzip -q /tmp/awscliv2.zip -d /tmp
 
 # Pull secrets from Secrets Manager
 SECRETS=$(aws secretsmanager get-secret-value \
-  --secret-id "library-system/dev" \
+  --secret-id "${secret_id}" \
   --region ${region} \
   --query SecretString \
   --output text)

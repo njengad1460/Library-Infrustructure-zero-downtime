@@ -69,6 +69,11 @@ variable "region" {
   type        = string
 }
 
+variable "secret_id" {
+  description = "Secrets Manager secret ID used by the instances at boot"
+  type        = string
+}
+
 # variable "key_name" {
 #   description = "Name of the SSH key pair to use for EC2 instances"
 #   type        = string

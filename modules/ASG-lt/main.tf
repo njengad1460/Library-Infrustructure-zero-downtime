@@ -25,6 +25,7 @@ resource "aws_launch_template" "lt" {
     backend_image_uri  = var.backend_image_uri
     frontend_image_uri = var.frontend_image_uri
     region             = var.region
+    secret_id          = var.secret_id
   }))
 
   lifecycle {
@@ -40,7 +41,8 @@ resource "aws_autoscaling_group" "asg" {
   health_check_type         = "ELB"
   health_check_grace_period = 420
 
-  wait_for_elb_capacity = 1
+  # Wait until the full desired fleet is healthy behind the ALB before apply completes.
+  wait_for_elb_capacity = var.desired_capacity
 
   min_size         = var.min_size
   max_size         = var.max_size
@@ -54,8 +56,8 @@ resource "aws_autoscaling_group" "asg" {
   instance_refresh {
     strategy = "Rolling"
     preferences {
-      min_healthy_percentage = 70
-      instance_warmup        = 120
+      min_healthy_percentage = 50
+      instance_warmup        = 420
     }
   }
 

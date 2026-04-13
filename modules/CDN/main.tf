@@ -1,3 +1,11 @@
+data "aws_cloudfront_cache_policy" "caching_disabled" {
+  name = "Managed-CachingDisabled"
+}
+
+data "aws_cloudfront_origin_request_policy" "all_viewer_except_host" {
+  name = "Managed-AllViewerExceptHostHeader"
+}
+
 resource "aws_cloudfront_distribution" "cdn" {
   origin {
     domain_name = var.alb_dns_name
@@ -11,27 +19,18 @@ resource "aws_cloudfront_distribution" "cdn" {
     }
   }
 
-  enabled             = true
-  is_ipv6_enabled     = true
-  comment             = "CDN for ${var.project_name}"
-  
-  default_cache_behavior {
-    allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
-    cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "ALBOrigin"
+  enabled         = true
+  is_ipv6_enabled = true
+  comment         = "CDN for ${var.project_name}"
 
-    forwarded_values {
-      query_string = true
-      headers      = ["Host", "Origin"] # Important for multi-tenant or origin-specific headers
-      cookies {
-        forward = "all"
-      }
-    }
+  default_cache_behavior {
+    allowed_methods          = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods           = ["GET", "HEAD"]
+    target_origin_id         = "ALBOrigin"
+    cache_policy_id          = data.aws_cloudfront_cache_policy.caching_disabled.id
+    origin_request_policy_id = data.aws_cloudfront_origin_request_policy.all_viewer_except_host.id
 
     viewer_protocol_policy = "redirect-to-https"
-    min_ttl                = 0
-    default_ttl            = 300
-    max_ttl                = 1200
   }
 
   # PriceClass_200 includes Africa (Edge location in Nairobi, Kenya)

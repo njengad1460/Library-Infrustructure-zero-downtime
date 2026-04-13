@@ -99,7 +99,7 @@ resource "aws_iam_role_policy" "secrets_access" {
     Statement = [{
       Effect   = "Allow"
       Action   = ["secretsmanager:GetSecretValue"]
-      Resource = "arn:aws:secretsmanager:*:*:secret:library-system/dev-*"
+      Resource = "arn:aws:secretsmanager:*:*:secret:${var.secret_id}*"
     }]
   })
 }

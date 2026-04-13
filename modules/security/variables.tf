@@ -13,3 +13,8 @@ variable "ssh_location" {
   type        = string
   default     = "0.0.0.0/0"
 }
+
+variable "secret_id" {
+  description = "Secrets Manager secret ID the EC2 instances are allowed to read"
+  type        = string
+}

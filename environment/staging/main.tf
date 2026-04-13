@@ -4,7 +4,7 @@ provider "aws" {
 
 locals {
   is_prod = var.environment == "prod"
-  
+
   # Environment-specific logic
   instance_type = var.instance_type
   project_name  = "${var.environment}-${var.project_name}"
@@ -24,6 +24,7 @@ module "security" {
   project_name = local.project_name
   vpc_id       = module.networking.vpc_id
   ssh_location = var.ssh_location
+  secret_id    = var.secret_id
 }
 
 module "load_balancer" {
@@ -35,12 +36,13 @@ module "load_balancer" {
 }
 
 module "asg" {
-  source             = "../../modules/ASG-lt"
-  project_name       = local.project_name
-  instance_type      = local.instance_type
-  subnet_ids         = module.networking.public_subnet_ids
-  ec2_sg_id          = module.security.ec2_sg_id
-  target_group_arn   = module.load_balancer.target_group_arn
+  source                    = "../../modules/ASG-lt"
+  project_name              = local.project_name
+  instance_type             = local.instance_type
+  subnet_ids                = module.networking.public_subnet_ids
+  ec2_sg_id                 = module.security.ec2_sg_id
+  target_group_arn          = module.load_balancer.target_group_arn
+  backend_target_group_arn  = module.load_balancer.backend_target_group_arn
   min_size                  = var.min_size
   max_size                  = var.max_size
   desired_capacity          = var.desired_capacity
@@ -49,6 +51,7 @@ module "asg" {
   backend_image_uri         = var.backend_image_uri
   frontend_image_uri        = var.frontend_image_uri
   region                    = var.region
+  secret_id                 = var.secret_id
   # key_name                  = var.key_name
 }
 

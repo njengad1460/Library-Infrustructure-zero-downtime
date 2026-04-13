@@ -25,7 +25,7 @@ variable "public_subnets" {
     cidr = string
     az   = string
   }))
-  default     = {}
+  default = {}
 }
 
 variable "use_existing_vpc" {
@@ -73,6 +73,11 @@ variable "backend_image_uri" {
 
 variable "frontend_image_uri" {
   description = "URI of the Frontend Docker image in ECR"
+  type        = string
+}
+
+variable "secret_id" {
+  description = "Secrets Manager secret ID for this environment"
   type        = string
 }
 
